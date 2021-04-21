@@ -1066,11 +1066,14 @@ void mg_list_commands(struct mg_connection *c, char *dir) {
       } else if (mg_stat(path, &st) != 0) {
         LOG(LL_ERROR, ("%lu stat(%s): %d", c->id, path, errno));
       } else {
-        char* end = strstr(dp->d_name, ".cmd");
-        if(end != NULL){
+        char* end = strstr(dp->d_name, ".cmd");        
+        if(end != NULL){          
           // File ends with ".cmd"
           FILE *fp; 
-          if ((fp=fopen(dp->d_name, "r")) != NULL) {
+          char fpath[MG_PATH_MAX] = {0};
+          sprintf(fpath, "%s/%s", dir, dp->d_name);
+
+          if ((fp=fopen(fpath, "r")) != NULL) {
             char *buf = NULL;    
             ssize_t line_size = 0;
             size_t line_buf_size = 0;    
@@ -1089,10 +1092,12 @@ void mg_list_commands(struct mg_connection *c, char *dir) {
             }
 
             free(buf);
-            end[0] = 0; // Remove ".sh" from the file name to list it as a command
-            mg_http_printf_chunk(c, "\n  - %s\t:%s", dp->d_name, comment);
-          }
-          fclose(fp);
+            end[0] = 0; // Remove ".cmd" from the file name to list it as a command
+
+            mg_http_printf_chunk(c, "%20s\t:%s", dp->d_name, comment);
+
+            fclose(fp);
+          }       
         }        
       }
     }

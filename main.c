@@ -9,7 +9,7 @@ static const char *s_root_dir = ".";
 static char s_listening_address[32] = {0};
 static const char *s_enable_hexdump = "no";
 static char listen_port[7] = {0};
-char cmd_dir[MG_PATH_MAX];
+char cmd_dir[MG_PATH_MAX] = {0};
 char ext_response[1024] = {0};
 static const char* help = "\tCommand server\n\nUsage url: /exec/<command>    .........  executes \"./cmd/command.cmd\"\nAvailable commands:\n";
 
@@ -32,30 +32,55 @@ static void shell_op(struct mg_connection *c, char* command)
   } 
 }
 
+static void serve_file(struct mg_connection *c, char* path){
+  FILE *fp;
+  char str[1024];
+  fp = fopen(path, "r");
+  if (fp != NULL){
+    while (fgets(str, 1024, fp) != NULL){
+      mg_http_printf_chunk(c, "%s", str);
+    }       
+        
+    fclose(fp);
+  }
+}
+
 static void cb(struct mg_connection *c, int ev, void *ev_data, void *fn_data) {
   if (ev == MG_EV_HTTP_MSG) {
     struct mg_http_message *hm = (struct mg_http_message *) ev_data;
     char command[MG_PATH_MAX] = {0};
-
-    mg_printf(c, "HTTP/1.1 200 OK\r\nTransfer-Encoding: chunked\r\n\r\n");
-
-    if(mg_http_match_uri(hm, "/exec/#")){
-      snprintf(command, (int)hm->uri.len, "./%.*s\n", (int)hm->uri.len, &hm->uri.ptr[sizeof("/exec")]);
-      char* end = strchr(command, ' ');
-      end[0] = 0;
-      if(command[2] == 0){
-        mg_http_printf_chunk(c, help);
-        mg_list_commands(c, cmd_dir);
-      }else{
-        strcat(command, ".cmd");
-        shell_op(c, command);
-      }      
+    if (mg_http_match_uri(hm, "/favicon.ico")){
+      // mg_printf(c, "%s", "HTTP/1.1 401 Not found\r\nContent-Length: 0\r\n\r\n"); 
+      struct mg_http_serve_opts opts = {s_root_dir, "#.shtml"};
+      mg_http_serve_dir(c, ev_data, &opts);  
     }else{
-      mg_http_printf_chunk(c, help);
-      mg_list_commands(c, cmd_dir);
-    }
+      mg_printf(c, "HTTP/1.1 200 OK\r\nTransfer-Encoding: chunked\r\n\r\n");
 
-    mg_http_printf_chunk(c, "");
+      if(mg_http_match_uri(hm, "/exec/#")){
+        snprintf(command, (int)hm->uri.len, "cmd/%.*s\n", (int)hm->uri.len, &hm->uri.ptr[sizeof("/exec")]);
+        char* end = strchr(command, ' ');
+        end[0] = 0;
+
+        if(command[4] == 0){
+          mg_http_printf_chunk(c, help);
+          sprintf(cmd_dir, "%s/cmd/", s_root_dir);
+          mg_list_commands(c, cmd_dir);
+        }else{
+          strcat(command, ".cmd");
+          shell_op(c, command);
+        }      
+      }else if(mg_http_match_uri(hm, "/")){
+        // Serve index
+        serve_file(c, "index.html");
+        mg_http_printf_chunk(c, "");
+      }else{
+        mg_http_printf_chunk(c, help);
+        sprintf(cmd_dir, "%s/cmd/", s_root_dir);
+        mg_list_commands(c, cmd_dir);
+      }
+
+      mg_http_printf_chunk(c, "");
+    }
   }
   (void) fn_data;
 }
@@ -105,7 +130,7 @@ int main(int argc, char *argv[]) {
 
   // Start infinite event loop
   sprintf(cmd_dir, "%s/cmd", s_root_dir);
-  chdir(cmd_dir);
+  chdir(s_root_dir);
 
   LOG(LL_INFO, ("Starting command server based on Mongoose v%s, serving [%s]", MG_VERSION, s_root_dir));
   for (;;) mg_mgr_poll(&mgr, 1000);

@@ -10,7 +10,7 @@ The code is built based on open source Mongoose web server (https://github.com/c
 
 # Building
 This is intended for use on linux systems, but can probably be adapted for other platforms. If you need this, consult original Mongoose repo.
-To build the app just run build.sh. It uses gcc, so you might need to install it first.
+To build the app just run build.sh. It uses gcc, so you might need to install it first. 
 
 # Contact
 ujagaga@gmail.com
