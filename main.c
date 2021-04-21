@@ -6,7 +6,7 @@
 
 static const char *s_debug_level = "2";
 static const char *s_root_dir = ".";
-static char *s_listening_address = "http://0.0.0.0:8000";
+static char s_listening_address[32] = {0};
 static const char *s_enable_hexdump = "no";
 static char listen_port[7] = {0};
 char cmd_dir[MG_PATH_MAX];
@@ -75,6 +75,10 @@ int main(int argc, char *argv[]) {
   struct mg_connection *c;
   int i;
 
+  // Set defaults
+  strcpy(s_listening_address, "http://0.0.0.0:8000");
+  strcpy(listen_port, "8000");
+
   // Parse command-line flags
   for (i = 1; i < argc; i++) {
     if (strcmp(argv[i], "-d") == 0) {
@@ -94,8 +98,7 @@ int main(int argc, char *argv[]) {
   mg_log_set(s_debug_level);
   mg_mgr_init(&mgr);
   if ((c = mg_http_listen(&mgr, s_listening_address, cb, &mgr)) == NULL) {
-    LOG(LL_ERROR, ("Cannot listen on %s. Use http://ADDR:PORT or :PORT",
-                   s_listening_address));
+    LOG(LL_ERROR, ("Cannot listen on %s.", s_listening_address));
     exit(EXIT_FAILURE);
   }
   if (mg_casecmp(s_enable_hexdump, "yes") == 0) c->is_hexdumping = 1;
