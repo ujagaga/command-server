@@ -53,7 +53,7 @@ do
     read -r -p "Port for HTTP server (ENTER for default: 80): " PORT
     PORT=${PORT:-80}
 
-    read -r -p "Folder to serve (default: $INSTALL_DIR): " SERVE_DIR
+    read -r -p "Folder to serve (default install dir: $INSTALL_DIR): " SERVE_DIR
     SERVE_DIR=${SERVE_DIR:-$INSTALL_DIR}
 
     echo
