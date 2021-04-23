@@ -9,7 +9,7 @@ serial_dev.baudrate = 115200
 serial_dev.timeout = 0.5
 serial_dev.open()
 serial_dev.readline(100)       # Just emty the buffer
-serial_dev.write('stop\n'.encode())
+serial_dev.write('M112\n'.encode())
 response_msg = serial_dev.readline(100).decode()
 serial_dev.close()
 
