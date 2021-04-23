@@ -72,11 +72,14 @@ echo
 echo "Building app"
 $PWD/$SRC_DIR/build.sh
 
+# Backup old web files
+echo "Backing up old web folder in case you already have altered content"
+rm -rf $INSTALL_DIR/web_old
+mv $INSTALL_DIR/web $INSTALL_DIR/web_old
 # Copying files and folders
 cp -rf cmd $INSTALL_DIR
-mv -f index.html $INSTALL_DIR
+cp -rf web $INSTALL_DIR
 mv -f README.md $INSTALL_DIR
-mv -f favicon.ico $INSTALL_DIR
 mv -f cmd-server $INSTALL_DIR
 echo
 
@@ -118,6 +121,7 @@ if [ "$OK" == "y" ]; then
 
     {
         echo 'echo "disabling service"'
+	echo "systemctl stop $SERVICE_FILE"
         echo "systemctl disable $SERVICE_FILE"
         echo "rm /etc/systemd/system/$SERVICE_FILE"
     } >> $UNINST_FILE

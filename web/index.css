@@ -35,3 +35,18 @@
 #preview{
     width: 100%;
 }
+
+#msglog{
+    opacity: 0;
+    position: fixed;
+    left: 10px;
+    bottom: 5px;
+    min-width: 200px;
+    min-height: 20px;
+    background-color: antiquewhite;
+    border: 1px solid black;
+    box-shadow: 2px 2px #666;
+    border-radius: 5px;
+    padding: 10px;
+    transition: opacity 2s;
+}
