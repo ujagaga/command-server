@@ -4,4 +4,3 @@
 CMD="ls -la"
 
 $CMD 2>&1
-

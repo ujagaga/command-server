@@ -3,9 +3,9 @@
     <title>3D Printer Preview</title>
   </head>
     <link rel="stylesheet" href="index.css">
-  <body>
+  <body onresize="setPreviewSize()">
     <center>
-      <img id="preview" src="#" />
+      <img id="preview" src="#" alt="No preview available." />
     </center>
     <div id="stopbtn" onclick="execute('print-stop');"><p>STOP</p></div>
     <p id="msglog"></p>

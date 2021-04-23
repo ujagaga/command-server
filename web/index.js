@@ -17,14 +17,23 @@ function execute(cmd_name) {
     request.send();
 }
 
+function setPreviewSize(){
+	var img = document.getElementById('preview');
+	
+	const width  = (window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth) - 20;
+	const height = (window.innerHeight|| document.documentElement.clientHeight|| document.body.clientHeight) - 20;
+	
+	img.style.width = width + 'px';
+	img.style.height = 'auto';
+	
+	if(img.height > height){
+		img.style.height = height + 'px';
+		img.style.width = 'auto';
+	}	
+}
+
 window.onload = function() {
     var img = document.getElementById('preview');
     img.src = window.location.protocol + "//" + window.location.hostname + ":8080/?action=stream";
-
-    img.onload = function() {
-        if(img.height > img.width) {
-            img.height = '100%';
-            img.width = 'auto';
-        }
-    };    
+	setPreviewSize();	
 }

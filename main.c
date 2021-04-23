@@ -9,10 +9,11 @@ static const char *s_root_dir = ".";
 static char s_listening_address[32] = {0};
 static const char *s_enable_hexdump = "no";
 static char listen_port[7] = {0};
-char cmd_dir[MG_PATH_MAX] = {0};
-char ext_response[1024] = {0};
-char html_root[MG_PATH_MAX] = {0};
+static char cmd_dir[MG_PATH_MAX] = {0};
+static char ext_response[1024] = {0};
+static char html_root[MG_PATH_MAX] = {0};
 static const char* help = "\tCommand server\n\nUsage url: /cmd/<command>    .........  executes \"./cmd/command.cmd\"\nAvailable commands:\n";
+static const char cmdExecScript[] = "cmd/cmdexec.sh";
 
 static void shell_op(struct mg_connection *c, char* command)
 {
@@ -27,7 +28,14 @@ static void shell_op(struct mg_connection *c, char* command)
   }else{    
     while (fgets(ext_response, sizeof(ext_response), fp) != NULL){
       // printf("\t %s", ext_response);
-      mg_http_printf_chunk(c, ext_response); 
+      char* errorStart = strstr(ext_response, cmdExecScript);
+      if(errorStart == NULL){
+        mg_http_printf_chunk(c, ext_response); 
+      }else{
+        errorStart += sizeof(cmdExecScript);
+        mg_http_printf_chunk(c, errorStart); 
+      }
+      
     }
     pclose(fp);
   } 
@@ -38,34 +46,32 @@ static void cb(struct mg_connection *c, int ev, void *ev_data, void *fn_data) {
     struct mg_http_message *hm = (struct mg_http_message *) ev_data;           
 
     if(mg_http_match_uri(hm, "/cmd/#")){
-      char command[MG_PATH_MAX] = {0};  
-
+      char command[MG_PATH_MAX] = {0}; 
+      char cmd_name[128] = {0};  
+      
       mg_printf(c, "HTTP/1.1 200 OK\r\nTransfer-Encoding: chunked\r\n\r\n");
-      snprintf(command, (int)hm->uri.len, "cmd/%.*s\n", (int)hm->uri.len, &hm->uri.ptr[sizeof("/cmd")]);  
-
-      printf("HM: %.*s\n", (int)hm->uri.len, hm->uri.ptr);
-
-      char* end = strchr(command, ' ');
+      snprintf(cmd_name, (int)hm->uri.len, "%.*s\n", (int)hm->uri.len, &hm->uri.ptr[sizeof("/cmd")]);      
+     
+      char* end = strchr(cmd_name, ' ');
       if(end != NULL){
         end[0] = 0;
       }      
 
-      printf("CMD: %s\n", command);
-
-      if(command[4] == 0){
+      if(cmd_name[0] == 0){
         // No command specified
         mg_http_printf_chunk(c, "Error: No command specified.\n\n");
         mg_http_printf_chunk(c, help);
         mg_list_commands(c, cmd_dir);
+
       }else{
-        strcat(command, ".cmd");
+
+        sprintf(command,"%s %s.cmd\n", cmdExecScript, cmd_name);
         shell_op(c, command);
       }      
 
       mg_http_printf_chunk(c, "");
 
     }else {
-
       struct mg_http_serve_opts opts = {html_root, "#.shtml"};
       int retVal = mg_http_serve_dir(c, ev_data, &opts);
       if( retVal != 0){
@@ -124,7 +130,7 @@ int main(int argc, char *argv[]) {
   if (mg_casecmp(s_enable_hexdump, "yes") == 0) c->is_hexdumping = 1;
 
   // Start infinite event loop
-  sprintf(cmd_dir, "%s/cmd", s_root_dir);
+  sprintf(cmd_dir, "%s/cmd/", s_root_dir);
   sprintf(html_root, "%s/web", s_root_dir);  
   chdir(s_root_dir);
 

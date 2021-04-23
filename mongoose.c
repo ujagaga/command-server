@@ -1053,8 +1053,7 @@ void mg_list_commands(struct mg_connection *c, char *dir) {
   DIR *dirp;
   
   while (p > dir && *p != '/') *p-- = '\0';
-  if ((dirp = (opendir(dir))) != NULL) {  
-
+  if ((dirp = (opendir(dir))) != NULL) {      
     while ((dp = readdir(dirp)) != NULL) {
       mg_stat_t st;
       const char *sep = dp->d_name[0] == MG_DIRSEP ? "/" : "";

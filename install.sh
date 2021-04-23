@@ -118,6 +118,7 @@ if [ "$OK" == "y" ]; then
         echo WantedBy=multi-user.target
     } > $SERVICE_FILE
     systemctl enable $SERVICE_FILE
+    systemctl start $SERVICE_FILE
 
     {
         echo 'echo "disabling service"'
