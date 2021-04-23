@@ -1,8 +1,0 @@
-# This is a list of files to be copied during update
-
-cmd/
-index.html
-README.md
-favicon.ico
-cmd-server
-
