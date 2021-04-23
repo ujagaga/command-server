@@ -61,9 +61,8 @@ do
     OK=${OK:-n}
 done
 
-# Cleanup install dir
-rm -rf $INSTALL_DIR
-mkdir $INSTALL_DIR
+# Create install dir
+mkdir -p $INSTALL_DIR
 echo
 
 echo "*************** Installing dependencies ***************"
