@@ -1,0 +1,37 @@
+#stopbtn{
+    display: block;
+    width: 60px;
+    height: 60px;
+    padding: 0;
+    border: solid .125em transparent;
+    background-color: red;
+    color:  #fff;
+    text-align: center;
+    border-radius: 50%;
+    font-size: 14px;
+    text-shadow: 1px 1px var(--c-sh-txt, #{rgba(#000, .5)});
+    box-shadow: 0 6px #999;
+    transition: .2s ease-out;
+    cursor: pointer;
+    position: fixed;
+    left: 10px;
+    top: 10px;
+}
+
+#stopbtn:hover, #stopbtn:focus {
+    outline: none;
+	filter: none
+}
+
+#stopbtn:active {    
+    box-shadow: 0 2px #666;
+    transform: translateY(4px);
+}
+
+#stopbtn p{
+    margin: calc(50% - 7px) auto;   
+}
+
+#preview{
+    width: 100%;
+}

@@ -1108,16 +1108,19 @@ void mg_list_commands(struct mg_connection *c, char *dir) {
 }
 #endif
 
-void mg_http_serve_dir(struct mg_connection *c, struct mg_http_message *hm,
+int mg_http_serve_dir(struct mg_connection *c, struct mg_http_message *hm,
                        struct mg_http_serve_opts *opts) {
   char t1[MG_PATH_MAX], t2[sizeof(t1)];
   t1[0] = t2[0] = '\0';
 
+  int retVal = 0;
+
   if (realpath(opts->root_dir, t1) == NULL) {
-    LOG(LL_ERROR, ("realpath(%s): %d", opts->root_dir, errno));
-    mg_http_reply(c, 400, "", "Bad web root [%s]\n", opts->root_dir);
+    LOG(LL_ERROR, ("ERR 400 realpath(%s): %d", opts->root_dir, errno));
+    retVal = 400;
   } else if (!mg_is_dir(t1)) {
-    mg_http_reply(c, 400, "", "Invalid web root [%s]\n", t1);
+    LOG(LL_ERROR, ("ERR 400: Invalid web root [%s]\n", t1));
+    retVal = 400;
   } else {
     // NOTE(lsm): Xilinx snprintf does not 0-terminate the detination for
     // the %.*s specifier, if the length is zero. Make sure hm->uri.len > 0
@@ -1130,10 +1133,8 @@ void mg_http_serve_dir(struct mg_connection *c, struct mg_http_message *hm,
     while (n2 > 0 && t1[n2 - 1] == '/') t1[--n2] = 0;
 
     if (realpath(t1, t2) == NULL) {
-      LOG(LL_ERROR, ("realpath(%s): %d", t1, errno));
-      mg_http_reply(c, 404, "", "Not found [%.*s]\n", (int) hm->uri.len,
-                    hm->uri.ptr);
-      return;
+      LOG(LL_ERROR, ("ERR 404: Not found realpath(%s): %d", t1, errno));
+      return 404;
     }
 
     if (mg_is_dir(t2)) {
@@ -1144,8 +1145,8 @@ void mg_http_serve_dir(struct mg_connection *c, struct mg_http_message *hm,
 
     if (strlen(t2) < n1 || memcmp(t1, t2, n1) != 0) {
       // Requested file is located outside root directory, fail
-      mg_http_reply(c, 404, "", "Invalid URI [%.*s]\n", (int) hm->uri.len,
-                    hm->uri.ptr);
+      LOG(LL_ERROR, ("ERR 404: Invalid URI [%.*s]\n", (int) hm->uri.len, hm->uri.ptr));
+      return 404;
     } else {
       FILE *fp = mg_fopen(t2, "r");
 #if MG_ENABLE_SSI
@@ -1176,6 +1177,7 @@ void mg_http_serve_dir(struct mg_connection *c, struct mg_http_message *hm,
       if (fp != NULL) fclose(fp);
     }
   }
+  return retVal;
 }
 #endif
 
