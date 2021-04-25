@@ -49,10 +49,16 @@ static void cb(struct mg_connection *c, int ev, void *ev_data, void *fn_data) {
       char command[MG_PATH_MAX] = {0}; 
       char cmd_name[128] = {0};  
       
+      
       mg_printf(c, "HTTP/1.1 200 OK\r\nTransfer-Encoding: chunked\r\n\r\n");
       snprintf(cmd_name, (int)hm->uri.len, "%.*s\n", (int)hm->uri.len, &hm->uri.ptr[sizeof("/cmd")]);      
      
       char* end = strchr(cmd_name, ' ');
+      if(end != NULL){
+        end[0] = 0;
+      }
+
+      end = strchr(cmd_name, '?');
       if(end != NULL){
         end[0] = 0;
       }      
@@ -64,8 +70,14 @@ static void cb(struct mg_connection *c, int ev, void *ev_data, void *fn_data) {
         mg_list_commands(c, cmd_dir);
 
       }else{
+        char params[2048] = {0}; 
+        mg_http_get_var(&(hm->message), "p", params, sizeof(params));
+        end = strchr(params, ' ');
+        if(end != NULL){
+          end[0] = 0;
+        }
 
-        sprintf(command,"%s %s.cmd\n", cmdExecScript, cmd_name);
+        sprintf(command,"%s \"%s.cmd %s\"\n", cmdExecScript, cmd_name, params);
         shell_op(c, command);
       }      
 

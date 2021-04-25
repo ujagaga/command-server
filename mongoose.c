@@ -471,7 +471,7 @@ int mg_http_get_var(const struct mg_str *buf, const char *name, char *dst,
     len = -4;  // Name does not exist
     dst[0] = '\0';
     for (p = buf->ptr; p + name_len < e; p++) {
-      if ((p == buf->ptr || p[-1] == '&') && p[name_len] == '=' &&
+      if ((p == buf->ptr || p[-1] == '&' || p[-1] == '?' || p[-1] == ' ') && p[name_len] == '=' &&
           !mg_ncasecmp(name, p, name_len)) {
         p += name_len + 1;
         s = (const char *) memchr(p, '&', (size_t)(e - p));
