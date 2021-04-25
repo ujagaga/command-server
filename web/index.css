@@ -1,10 +1,10 @@
-#stopbtn{
+#hellobtn{
     display: block;
     width: 60px;
     height: 60px;
     padding: 0;
     border: solid .125em transparent;
-    background-color: red;
+    background-color: green;
     color:  #fff;
     text-align: center;
     border-radius: 50%;
@@ -18,22 +18,18 @@
     top: 10px;
 }
 
-#stopbtn:hover, #stopbtn:focus {
+#hellobtn:hover, #hellobtn:focus {
     outline: none;
 	filter: none
 }
 
-#stopbtn:active {    
+#hellobtn:active {    
     box-shadow: 0 2px #666;
     transform: translateY(4px);
 }
 
-#stopbtn p{
+#hellobtn p{
     margin: calc(50% - 7px) auto;   
-}
-
-#preview{
-   
 }
 
 #msglog{
