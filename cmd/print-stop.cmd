@@ -1,32 +1,21 @@
 #!/usr/bin/python3
 
 # Stops the 3D printer
-# M25 - Pause SD print
-# G1 E-2 Z0.2 F2400 ;Retract and raise Z
-# M106 S0 ;Turn-off fan
-# M104 S0 ;Turn-off hotend
-# M140 S0 ;Turn-off bed
-# M84 X Y E ;Disable all steppers but Z
-# M18 - Disable steppers
-# M300 S440 P200 ; Play sound
-# M300 S660 P250
-# M300 S880 P300
 
 import serial
+from time import time
 
 UART = "/dev/ttyUSB0"
+MSG_TIMEOUT = 10
 
 UARTMSG = [
-    "M25",                  # Pause SD print
-    "G1 E-2 Z0.2 F2400",    # Retract and raise Z
+    "M25",                  # Pause SD print. Any command would do because the printer will reset at this point on serial connect.
+    "G91",                  # Ensure relative coordinates
+    "G1 Z10",               # Raise head
     "M106 S0",              # Turn-off fan
     "M104 S0",              # Turn-off hotend
     "M140 S0",              # Turn-off bed
-    "M84 X Y E",            # Disable all steppers but Z
     "M18",                  # Disable steppers
-    "M300 S440 P200",       # Play sound
-    "M300 S660 P250",       # Play sound
-    "M300 S880 P300"        # Play sound
 ]
 
 serial_dev = serial.Serial()
@@ -35,12 +24,20 @@ serial_dev.baudrate = 115200
 serial_dev.timeout = 0.1
 serial_dev.open()
 serial_dev.readline()       # Just empty the buffer
-serial_dev.timeout = 5
+serial_dev.timeout = 1
 
 for msg in UARTMSG:
+    print("TX:", msg)
     outmsg = msg + '\n'
     serial_dev.write(outmsg.encode())
-    response_msg = serial_dev.readline(100).decode()
-    print(response_msg.replace('\n', ''))
+
+    start_time = time()
+
+    while (time() - start_time) < MSG_TIMEOUT:
+        response_msg = serial_dev.readline(1024).decode()
+        if response_msg is not None and len(response_msg) > 1:
+            print(" ", response_msg.replace('\n', ''))
+            if response_msg.startswith("ok"):
+                break
 
 serial_dev.close()

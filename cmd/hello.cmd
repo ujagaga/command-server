@@ -3,4 +3,4 @@
 
 import sys
 
-print("Hello from python!");
+print("Hello from python!")
