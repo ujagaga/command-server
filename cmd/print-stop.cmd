@@ -2,14 +2,14 @@
 
 # Stops the 3D printer
 
-import serial
+import socket
 from time import time
 
-UART = "/dev/ttyUSB0"
+HOST = "localhost"
+PORT = 2000
 MSG_TIMEOUT = 10
-
 UARTMSG = [
-    "M25",                  # Pause SD print. Any command would do because the printer will reset at this point on serial connect.
+    "M25",                  # Pause SD print
     "G91",                  # Ensure relative coordinates
     "G1 Z10",               # Raise head
     "M106 S0",              # Turn-off fan
@@ -18,26 +18,23 @@ UARTMSG = [
     "M18",                  # Disable steppers
 ]
 
-serial_dev = serial.Serial()
-serial_dev.port = UART
-serial_dev.baudrate = 115200
-serial_dev.timeout = 0.1
-serial_dev.open()
-serial_dev.readline()       # Just empty the buffer
-serial_dev.timeout = 1
+with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as sock:
+    # Connect to server and send data
+    sock.connect((HOST, PORT))
 
-for msg in UARTMSG:
-    print("TX:", msg)
-    outmsg = msg + '\n'
-    serial_dev.write(outmsg.encode())
+    for msg in UARTMSG:
+        print("TX:", msg)
+        sock.sendall(bytes(msg + "\n", "utf-8"))
 
-    start_time = time()
+        # Receive data from the server
+        start_time = time()
+        rx = 0
+        response = bytes(b'')
+        while (rx != b'\r') and ((time() - start_time) < MSG_TIMEOUT):
+            rx = sock.recv(1024)
+            response += rx
 
-    while (time() - start_time) < MSG_TIMEOUT:
-        response_msg = serial_dev.readline(1024).decode()
-        if response_msg is not None and len(response_msg) > 1:
-            print(" ", response_msg.replace('\n', ''))
-            if response_msg.startswith("ok"):
-                break
+        print(response.decode('utf-8'))
 
-serial_dev.close()
+
+
