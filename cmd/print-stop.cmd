@@ -4,7 +4,7 @@
 
 import socket
 
-HOST = "printer.local"
+HOST = "localhost"
 PORT = 2000
 MSG_TIMEOUT = 10
 UARTMSG = [
