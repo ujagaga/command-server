@@ -3,9 +3,8 @@
 # Stops the 3D printer
 
 import socket
-from time import time
 
-HOST = "localhost"
+HOST = "printer.local"
 PORT = 2000
 MSG_TIMEOUT = 10
 UARTMSG = [
@@ -18,23 +17,15 @@ UARTMSG = [
     "M18",                  # Disable steppers
 ]
 
-with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as sock:
-    # Connect to server and send data
-    sock.connect((HOST, PORT))
-
-    for msg in UARTMSG:
+for msg in UARTMSG:
+    with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as sock:
+        # Connect to server and send data
+        sock.connect((HOST, PORT))
         print("TX:", msg)
         sock.sendall(bytes(msg + "\n", "utf-8"))
+        rx = sock.recv(1024)
 
-        # Receive data from the server
-        start_time = time()
-        rx = 0
-        response = bytes(b'')
-        while (rx != b'\r') and ((time() - start_time) < MSG_TIMEOUT):
-            rx = sock.recv(1024)
-            response += rx
-
-        print(response.decode('utf-8'))
+        print(rx.decode('utf-8'))
 
 
 

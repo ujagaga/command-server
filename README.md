@@ -15,6 +15,8 @@ You can pass command parameters using html escaped value for parameter "p" like:
 
 	<server_addr>/cmd/<comand_name>?p=<comand_arguments>
 
+My CrealtyEnder3 3Dprinter uses an Aruino compatible board which resets upon UART connect. This means that I need a program to maintain serial port connection and provide communication in some other way like TCP. For this purpose I prepared "uart_server.py" to run at system startup in the background and keep the serial port open while providing uart acccess via TCP.
+
 # Building
 This is intended for use on linux debian based systems, but can probably be adapted for other platforms. If you need to do this, consult original Mongoose repo. I only tested it on Ubuntu and Armbian.
 To build the app just run build.sh. It uses gcc, so you might need to install it first (on Ubuntu run: sudo apt install build-essential). 
@@ -49,13 +51,4 @@ Test if ok by running:
 
 Navigate on your computer to IP address, port 8080. To get just the stream, go to <ip_addr>:8080/?action=stream
 If the video is lagging, reduce framerate by changing the value after "-f" parameter to a lower one. 
-
-My CrealtyEnder3 3Dprinter uses an Aruino compatible board which resets upon UART connect. This means that I need a program to maintain serial port connection and provide communication in some other way like TCP. For this purpose I am usin "ser2net". To set ot up, just install it:
-	sudo apt install ser2net
-
-and write a configuration file "/etc/ser2net.conf". You may add a line or remove everything and leave just the following line to connect to uart and stream data to TCP port 2000:
-
-	2000:raw:600:/dev/ttyUSB0:115200 8DATABITS NONE 1STOPBIT
-
-After this, restart the server.
 

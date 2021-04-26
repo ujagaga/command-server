@@ -121,7 +121,39 @@ if [ "$OK" == "y" ]; then
     systemctl start $SERVICE_FILE
 
     {
-        echo 'echo "disabling service"'
+        echo 'echo "disabling server service"'
+	echo "systemctl stop $SERVICE_FILE"
+        echo "systemctl disable $SERVICE_FILE"
+        echo "rm /etc/systemd/system/$SERVICE_FILE"
+    } >> $UNINST_FILE
+fi
+
+read -r -p "Enable 3D printer UART server at startup (N/y)? " OK
+OK=${OK:-n}
+if [ "$OK" == "y" ]; then
+    cd /etc/systemd/system/ || { redecho "ERROR: Could not find /etc/systemd/system/. Are you sure this is a compatible platform?"; exit 1; }
+
+    # Create startup service  
+    SERVICE_FILE=printeruartserver.service
+    {
+        echo "[Unit]"
+        echo Description=3D printer UART server startup service
+        echo After=network-online.target
+        echo Wants=network-online.target
+        echo
+        echo "[Service]"
+        echo Type=simple
+        echo RemainAfterExit=yes
+        echo ExecStart=$INSTALL_DIR/uart_server.py
+        echo
+        echo "[Install]"
+        echo WantedBy=multi-user.target
+    } > $SERVICE_FILE
+    systemctl enable $SERVICE_FILE
+    systemctl start $SERVICE_FILE
+
+    {
+        echo 'echo "disabling uart service"'
 	echo "systemctl stop $SERVICE_FILE"
         echo "systemctl disable $SERVICE_FILE"
         echo "rm /etc/systemd/system/$SERVICE_FILE"
