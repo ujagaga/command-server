@@ -81,6 +81,8 @@ cp -rf cmd $INSTALL_DIR
 cp -rf web $INSTALL_DIR
 mv -f README.md $INSTALL_DIR
 mv -f cmd-server $INSTALL_DIR
+mv -f uart_server.py $INSTALL_DIR
+
 echo
 
 UNINST_FILE=$INSTALL_DIR/uninstall.sh
