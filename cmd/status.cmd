@@ -8,7 +8,6 @@ HOST = "localhost"
 PORT = 2000
 MSG_TIMEOUT = 10
 UARTMSG = [
-    "M27 C",
     "M27 S4",
 ]
 
