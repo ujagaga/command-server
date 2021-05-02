@@ -1,21 +1,21 @@
+body{
+    margin: 0;
+    overflow: hidden;
+}
+
 #stopbtn{
-    display: block;
-    width: 60px;
-    height: 60px;
-    padding: 0;
-    border: solid .125em transparent;
-    background-color: red;
+    background-color: #800000;
     color:  #fff;
-    text-align: center;
-    border-radius: 50%;
+    text-align: center;    
     font-size: 14px;
-    text-shadow: 1px 1px var(--c-sh-txt, #{rgba(#000, .5)});
-    box-shadow: 0 6px #999;
     transition: .2s ease-out;
     cursor: pointer;
-    position: fixed;
-    left: 10px;
-    top: 10px;
+    padding: 10px;
+    border-radius: 5px;
+    border: none;
+    margin: 5px;
+    display: inline-block;
+    width: 100px;
 }
 
 #stopbtn:hover, #stopbtn:focus {
@@ -24,16 +24,7 @@
 }
 
 #stopbtn:active {    
-    box-shadow: 0 2px #666;
-    transform: translateY(4px);
-}
-
-#stopbtn p{
-    margin: calc(50% - 7px) auto;   
-}
-
-#preview{
-   
+    transform: translateY(1px);
 }
 
 #msglog{
@@ -49,4 +40,36 @@
     border-radius: 5px;
     padding: 10px;
     transition: opacity 2s;
+}
+
+#status-bar{
+    min-height: 30px;
+    width: 100%;
+    margin: 0 0 5px 0;
+    padding: 0;
+    background-color:beige;
+    -webkit-box-shadow: 0px 2px 5px 0px rgba(0,0,0,0.75);
+    -moz-box-shadow: 0px 2px 5px 0px rgba(0,0,0,0.75);
+    box-shadow: 0px 2px 5px 0px rgba(0,0,0,0.75);
+    z-index: 100;
+    overflow: hidden;
+}
+
+#status-msg{
+    display: inline-block;
+    width: 100px;
+    padding: 5px;
+    margin: 0;
+}
+
+#printer-msg{
+    float: right;
+    height:45px;
+    width:calc(100% - 240px);
+    border: none;
+    overflow:auto;
+    margin: 0;
+    padding: 2px;
+    background-color: black;
+    color: greenyellow;
 }
