@@ -1,3 +1,7 @@
+function endsWith(str, suffix) {
+    return str.indexOf(suffix, str.length - suffix.length) !== -1;
+}
+
 function execute(cmd_name) {
     var request = new XMLHttpRequest();
     request.open("GET", window.location.protocol + "//" + window.location.host + "/cmd/" + cmd_name);
