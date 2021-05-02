@@ -37,9 +37,10 @@ def uart_init():
 
 
 def uart_send(data):
-    print("\tTX:", data)
-    serial_dev.write(data)
-    serial_dev.write("\n".encode())
+    if len(data) > 2:
+        print("\tTX:", data)
+        serial_dev.write(data)
+        serial_dev.write("\n".encode())
 
     start_time = time()
     response = ""

@@ -23,7 +23,8 @@ function get_status() {
 
     request.onreadystatechange = function() {
         if(this.readyState === 4 && this.status === 200) {
-            console.log(this.responseText);          
+            console.log(this.responseText);        
+            setTimeout(get_status, 1000);   
         }
     };
 
@@ -49,5 +50,5 @@ window.onload = function() {
     var img = document.getElementById('preview');
     img.src = window.location.protocol + "//" + window.location.hostname + ":8080/?action=stream";
 	setPreviewSize();	
-    window.setInterval(get_status, 2000);
+    get_status();
 }
