@@ -1,5 +1,9 @@
-String.prototype.endsWith = function (s) {
-    return this.length >= s.length && this.substr(this.length - s.length) == s;
+function endsWith(str, suffix) {
+    if(str.length < suffix){
+        return false;
+    }
+    var test = str.substring(str.length - suffix.length);
+    return test.includes(suffix);
 }
 
 function execute(cmd_name) {
