@@ -30,7 +30,7 @@ function get_status() {
             console.log(this.responseText);  
             var printMsg = document.getElementById('printer-msg');
             var newMsg = this.responseText.replace(/(?:\r\n|\r|\n)/g, '<br>');
-            if(!printMsg.endsWith(newMsg)){
+            if(!endsWith(printMsg, newMsg)){
                 printMsg += newMsg;
 
                 if(printMsg.length > 1000){
