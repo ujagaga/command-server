@@ -21,7 +21,7 @@ function setPreviewSize(){
 	var img = document.getElementById('preview');
 	
 	const width  = (window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth) - 20;
-	const height = (window.innerHeight|| document.documentElement.clientHeight|| document.body.clientHeight) - 20;
+	const height = (window.innerHeight|| document.documentElement.clientHeight|| document.body.clientHeight) - 60;
 	
 	img.style.width = width + 'px';
 	img.style.height = 'auto';
