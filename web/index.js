@@ -29,13 +29,13 @@ function get_status() {
             if(lastMsg != this.responseText){
                 var printMsg = document.getElementById('printer-msg').innerHTML;
                 var newMsg = this.responseText.replace(/(?:\r\n|\r|\n)/g, '<br>');
-                printMsg += newMsg;
+                printMsg += newMsg.replace("<br><br>", "<br>");
 
                 if(printMsg.length > 1000){
                     printMsg = printMsg.substring(printMsg.length - 1000);
                 }  
 
-                console.log(printMsg);
+                document.getElementById('printer-msg').innerHTML = printMsg;
                 
                 lastMsg = this.responseText;
             }
