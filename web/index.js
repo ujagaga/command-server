@@ -27,16 +27,17 @@ function get_status() {
         if(this.readyState === 4 && this.status === 200) {            
            
             if(lastMsg != this.responseText){
-                var printMsg = document.getElementById('printer-msg').innerHTML;
+                var printMsg = document.getElementById('printer-msg');
+                var printMsgText = printMsg.innerHTML;
                 var newMsg = this.responseText.replace(/(?:\r\n|\r|\n)/g, '<br>');
-                printMsg += newMsg.replace("<br><br>", "<br>");
+                printMsgText += newMsg.replace("<br><br>", "<br>");
 
-                if(printMsg.length > 1000){
-                    printMsg = printMsg.substring(printMsg.length - 1000);
+                if(printMsgText.length > 1000){
+                    printMsgText = printMsgText.substring(printMsgText.length - 1000);
                 }  
 
-                document.getElementById('printer-msg').innerHTML = printMsg;
-                
+                printMsg.innerHTML = printMsgText;
+                printMsg.scrollTop = printMsg.scrollHeight;
                 lastMsg = this.responseText;
             }
 
