@@ -25,8 +25,7 @@ function get_status() {
 
     request.onreadystatechange = function() {
         if(this.readyState === 4 && this.status === 200) {            
-            console.log(this.responseText);  
-            
+           
             if(lastMsg != this.responseText){
                 var printMsg = document.getElementById('printer-msg').innerHTML;
                 var newMsg = this.responseText.replace(/(?:\r\n|\r|\n)/g, '<br>');
@@ -35,6 +34,8 @@ function get_status() {
                 if(printMsg.length > 1000){
                     printMsg = printMsg.substring(printMsg.length - 1000);
                 }  
+
+                console.log(printMsg);
                 
                 lastMsg = this.responseText;
             }
