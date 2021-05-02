@@ -2,8 +2,7 @@ function endsWith(str, suffix) {
     if(str.length < suffix){
         return false;
     }
-    var test = str.substring(str.length - suffix.length);
-    return test.includes(suffix);
+    return str.includes(suffix, str.length - suffix.length);
 }
 
 function execute(cmd_name) {
