@@ -65,6 +65,7 @@ body{
     float: right;
     height:45px;
     width:calc(100% - 240px);
+    min-width: 200px;
     border: none;
     overflow:auto;
     margin: 0;

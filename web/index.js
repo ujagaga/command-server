@@ -24,9 +24,11 @@ function get_status() {
     request.open("GET", window.location.protocol + "//" + window.location.host + "/cmd/status");
 
     request.onreadystatechange = function() {
-        if(this.readyState === 4 && this.status === 200) {            
-           
+        if(this.readyState === 4 && this.status === 200) { 
             if(lastMsg != this.responseText){
+                // Received new status. Display it in printer message box
+                lastMsg = this.responseText;
+
                 var printMsg = document.getElementById('printer-msg');
                 var printMsgText = printMsg.innerHTML;
                 var newMsg = this.responseText.replace(/(?:\r\n|\r|\n)/g, '<br>');
@@ -38,7 +40,18 @@ function get_status() {
 
                 printMsg.innerHTML = printMsgText;
                 printMsg.scrollTop = printMsg.scrollHeight;
-                lastMsg = this.responseText;
+                
+                // Parse the progress             
+                var lines = this.responseText.split('\n');
+                for (i = lines.length - 1; i >= 0; i--) {
+                    line = lines[i];
+                    if(line.includes('printing byte')){
+                        var progress = line.split('printing byte')[1].split('/');
+                        var percentage = (progress[0]/progress[1]) * 100;
+                        document.getElementById('status-msg').innerHTML = "" + percentage + "%";
+                        break;
+                    }
+                }
             }
 
             setTimeout(get_status, 1000);   
