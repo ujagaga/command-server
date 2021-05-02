@@ -1,4 +1,6 @@
 var lastMsg = "";
+var startTime = 0;
+var startPercentage = 0;
 
 function execute(cmd_name) {
     var request = new XMLHttpRequest();
@@ -47,8 +49,22 @@ function get_status() {
                     line = lines[i];
                     if(line.includes('printing byte')){
                         var progress = line.split('printing byte')[1].split('/');
-                        var percentage = (progress[0]/progress[1]) * 100;
+                        // Calculate current percentage
+                        var percentage = Math.round((progress[0]/progress[1]) * 100);
                         document.getElementById('status-msg').innerHTML = "" + percentage + "%";
+
+                        // Calculate ETA
+                        if(startTime == 0){
+                            startTime = Math.floor(Date.now() / 1000);
+                            startPercentage = percentage;
+                        }else if(percentage > startPercentage){
+                            var currentTime = Math.floor(Date.now() / 1000);
+                            var percentProgress = percentage - startPercentage;
+                            var timeProgress = currentTime - startTime;
+                            var remTime = Math.round(((100 - percentage) * timeProgress) / percentProgress);
+                            document.getElementById('status-msg').innerHTML += " ETA:" + remTime + "s";
+                        }
+
                         break;
                     }
                 }
