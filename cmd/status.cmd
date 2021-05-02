@@ -20,6 +20,7 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as sock:
 
 if len(rx) < 5:
     # No valid response from printer. Request status.
+    print("No printer response. Requesting status...")
     with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as sock:
         # Connect to server and send data
         sock.connect((HOST, PORT))
