@@ -1,5 +1,5 @@
-function endsWith(str, suffix) {
-    return str.indexOf(suffix, str.length - suffix.length) !== -1;
+String.prototype.endsWith = function (s) {
+    return this.length >= s.length && this.substr(this.length - s.length) == s;
 }
 
 function execute(cmd_name) {
@@ -30,7 +30,7 @@ function get_status() {
             console.log(this.responseText);  
             var printMsg = document.getElementById('printer-msg');
             var newMsg = this.responseText.replace(/(?:\r\n|\r|\n)/g, '<br>');
-            if(!endsWith(printMsg, newMsg)){
+            if(!printMsg.endsWith(newMsg)){
                 printMsg += newMsg;
 
                 if(printMsg.length > 1000){
