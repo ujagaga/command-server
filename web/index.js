@@ -1,11 +1,4 @@
-function endsWith(str, suffix) {
-    if(str.length < suffix){
-        return false;
-    }
-    var test = str.substring(str.length - suffix.length);
-
-    return test == suffix;
-}
+var lastMsg = "";
 
 function execute(cmd_name) {
     var request = new XMLHttpRequest();
@@ -33,14 +26,17 @@ function get_status() {
     request.onreadystatechange = function() {
         if(this.readyState === 4 && this.status === 200) {            
             console.log(this.responseText);  
-            var printMsg = document.getElementById('printer-msg');
-            var newMsg = this.responseText.replace(/(?:\r\n|\r|\n)/g, '<br>');
-            if(!endsWith(printMsg, newMsg)){
+            
+            if(lastMsg != this.responseText){
+                var printMsg = document.getElementById('printer-msg').innerHTML;
+                var newMsg = this.responseText.replace(/(?:\r\n|\r|\n)/g, '<br>');
                 printMsg += newMsg;
 
                 if(printMsg.length > 1000){
                     printMsg = printMsg.substring(printMsg.length - 1000);
-                }                
+                }  
+                
+                lastMsg = this.responseText;
             }
 
             setTimeout(get_status, 1000);   
