@@ -1,12 +1,13 @@
 # command-server
 Web server to remotely execute custom scripts.
 Feel free to use as you wish. 
+I use it to monitor my 3D printer.
 
 # What it is for
 I often use remote linux machines and need a simple web server to run custom commands via http get request. This is usefull for embedding in html pages so I can execute shell commands from a simple web page.
 I developed this as a very light weight alternative to Octoprint. All I wanted was a stop button and a web camera preview for my 3D printer. I am using MJPEG streamer to preview video and this server to send command to the printer.
 If you need it for something else, a simplified version might be a better starting point so git checkout branch "Basic".
-Recently I tested a python based web server using "FastAPI" which is about 3 times faster than "Flask". On my Raspberry Pi Zero, "mongoose web server" was more than 3 times faster. For this reason I believe my server would be a better choice than Octoprint if anyone were to continue the development. Personally, I might ask for a couple of more features, like code upload and print ETA, so I intend to implement those too, but that is where I would stop.
+Recently I tested a python based web server using "FastAPI" which is about 3 times faster than "Flask". On my Raspberry Pi Zero, "mongoose web server" was more than 3 times faster than FastAPI. For this reason I believe my server would be a better choice than Octoprint for smaller development boards like Orange Pi Zero.
 
 # Technology
 The code is based on open source Mongoose web server (https://github.com/cesanta/mongoose). You can configure the folder to serve and it expects to have a "cmd" sub-folder which contains scripts to execute (shell, python,...). The scripts must have a sheebang (like "#!/bin/bash" or "#!/usr/bin/python3") on the first line so the system knows how to execute it. Make sure it is the absolute path to interpreter and not an environment variable because if you start the server as a service or from a cron job, the environment is not available.

@@ -1,6 +1,12 @@
 var lastMsg = "";
 var startTime = 0;
 var startPercentage = 0;
+var pendingCmd = "";
+
+
+function prepareCmd(cmd_name){
+    pendingCmd = cmd_name;
+}
 
 function execute(cmd_name) {
     var request = new XMLHttpRequest();
@@ -8,7 +14,6 @@ function execute(cmd_name) {
 
     request.onreadystatechange = function() {
         if(this.readyState === 4 && this.status === 200) {
-            console.log(this.responseText);
             var msglog = document.getElementById('msglog');
             msglog.style.opacity = '1';
             msglog.innerHTML = this.responseText.replace(/(?:\r\n|\r|\n)/g, '<br>');
@@ -29,7 +34,7 @@ function get_status() {
         if(this.readyState === 4 && this.status === 200) { 
             if(lastMsg != this.responseText){
                 // Received new status. Display it in printer message box
-                lastMsg = this.responseText;
+                lastMsg = this.responseText;                
 
                 var printMsg = document.getElementById('printer-msg');
                 var printMsgText = printMsg.innerHTML;
@@ -50,27 +55,36 @@ function get_status() {
                     if(line.includes('printing byte')){
                         var progress = line.split('printing byte')[1].split('/');
                         // Calculate current percentage
-                        var percentage = Math.round((progress[0]/progress[1]) * 100);
+                        var percentage = 0;
+                        if(progress[1] > 0){
+                            percentage = Math.round((progress[0]/progress[1]) * 100);
+                        }                    
                         document.getElementById('status-msg').innerHTML = "" + percentage + "%";
 
                         // Calculate ETA
-                        if(startTime == 0){
+                        if((startTime == 0) || (startPercentage == 0)){
                             startTime = Math.floor(Date.now() / 1000);
                             startPercentage = percentage;
                         }else if(percentage > startPercentage){
                             var currentTime = Math.floor(Date.now() / 1000);
                             var percentProgress = percentage - startPercentage;
                             var timeProgress = currentTime - startTime;
-                            var remTime = Math.round(((100 - percentage) * timeProgress) / percentProgress);
-                            document.getElementById('status-msg').innerHTML += " ETA:" + remTime + "s";
+                            var remTime = Math.round((((100 - percentage) * timeProgress) / percentProgress)/60);
+                            document.getElementById('status-msg').innerHTML += " ETA:" + remTime + "min";
                         }
-
                         break;
                     }
                 }
             }
 
-            setTimeout(get_status, 1000);   
+            if(pendingCmd.length > 2){
+                execute(pendingCmd);
+                pendingCmd = "";
+                // allow more time for pending command to execute to prevent interleaving
+                setTimeout(get_status, 11000);
+            }else{
+                setTimeout(get_status, 800);
+            }
         }
     };
 
